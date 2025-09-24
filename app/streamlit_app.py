@@ -1,6 +1,9 @@
 import streamlit as st
 import pandas as pd
-import geopandas as gpd
+from pathlib import Path
+
+from scripts.data_prep import load_admin_level
+from scripts.zonal_stats import compute_band_stats
 from scripts.plotting import plot_distribution, top_bottom_ranking, plot_choropleth
 
 st.set_page_config(page_title="Perú Tmin – Zonal Stats", layout="wide")
@@ -8,53 +11,64 @@ st.set_page_config(page_title="Perú Tmin – Zonal Stats", layout="wide")
 st.title("Perú Tmin – Zonal Statistics & Public Policy")
 
 st.markdown("""
-Esta app permitira explorar estadísticas de temperatura mínima (Tmin) 
-por distritos/provincias/departamentos en el Perú, y conectar los resultados 
-con propuestas de política pública.
+Explora estadísticas de temperatura mínima (Tmin) a nivel distrital, provincial o departamental, 
+y conecta los resultados con propuestas de política pública.
 """)
 
-# Datos de ejemplo
-data = {
-    "UBIGEO": ["001", "002", "003"],
-    "NAME": ["Distrito A", "Distrito B", "Distrito C"],
-    "mean": [5.2, 12.3, 8.7],
-    "min": [1.0, 8.5, 3.2],
-    "max": [10.2, 15.6, 12.9],
-    "std": [2.1, 1.3, 1.7],
-    "percentile_10": [2.0, 9.0, 4.0],
-    "percentile_90": [9.0, 14.0, 11.5],
-    "cold_margin": [2.0 - 0.0, 9.0 - 0.0, 4.0 - 0.0],
-}
-gdf = pd.DataFrame(data)
+# --- Sidebar
+level = st.sidebar.selectbox("Nivel territorial", ["district", "province", "department"])
+band = st.sidebar.number_input("Banda del raster (1 = 2020, 2 = 2021, ...)", min_value=1, value=1)
+
+# --- Cargar shapes
+gdf = load_admin_level(level)
+
+# --- Calcular estadísticas zonales
+try:
+    res = compute_band_stats(gdf, tif_name="tmin_peru.tif", band=band)
+except FileNotFoundError:
+    st.error("No se encontró el archivo raster en /data/raster/")
+    st.stop()
 
 st.subheader("Resultados (tabla)")
-st.dataframe(gdf)
+st.dataframe(
+    res[["UBIGEO", "NAME", "mean", "min", "max", "std", "percentile_10", "percentile_90", "cold_margin"]]
+    .sort_values("mean")
+)
 
-# Distribución
+# --- Descargar resultados
+st.download_button(
+    "⬇️ Descargar CSV",
+    data=res.to_csv(index=False),
+    file_name=f"zonal_tmin_band{band}_{level}.csv",
+    mime="text/csv",
+)
+
+# --- Distribución
 st.subheader("Distribución de temperaturas promedio")
-fig_dist = plot_distribution(gdf, col="mean")
+fig_dist = plot_distribution(res, col="mean")
 st.pyplot(fig_dist)
 
-# Ranking
-st.subheader("Ranking de distritos")
-topk, botk = top_bottom_ranking(gdf, col="mean")
+# --- Ranking
+st.subheader("Ranking de territorios")
+topk, botk = top_bottom_ranking(res, col="mean", k=15)
 col1, col2 = st.columns(2)
 with col1:
     st.write("**Más fríos**")
-    st.dataframe(topk)
+    st.dataframe(topk[["UBIGEO", "NAME", "mean"]])
 with col2:
     st.write("**Más cálidos**")
-    st.dataframe(botk)
+    st.dataframe(botk[["UBIGEO", "NAME", "mean"]])
 
-# Mapa estático
-st.subheader("Mapa estático (ejemplo)")
-gdf_geo = gpd.GeoDataFrame(gdf)  
-fig_map = plot_choropleth(gdf_geo, col="cold_margin")
+# --- Mapa estático
+st.subheader("Mapa estático")
+fig_map = plot_choropleth(res, col="cold_margin")
 st.pyplot(fig_map)
 
-st.header("Propuestas de política pública (borrador)")
+# --- Política pública
+st.header("🧭 Propuestas de política pública")
 st.markdown("""
 - **Medida 1:** Vivienda térmica (ISUR).  
 - **Medida 2:** Kits anti-helada para pequeños productores.  
 - **Medida 3:** Calendario agro + alertas tempranas.
 """)
+
