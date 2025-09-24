@@ -1,10 +1,13 @@
-import streamlit as st
-import pandas as pd
+import sys
 from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.append(str(ROOT))
 
 from scripts.data_prep import load_admin_level
 from scripts.zonal_stats import compute_band_stats
 from scripts.plotting import plot_distribution, top_bottom_ranking, plot_choropleth
+
 
 st.set_page_config(page_title="Perú Tmin – Zonal Stats", layout="wide")
 
