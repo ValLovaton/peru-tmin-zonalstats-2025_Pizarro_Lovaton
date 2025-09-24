@@ -19,5 +19,11 @@ Analizar datos de temperatura mínima (Tmin) a nivel territorial (distrito/provi
   ```bash
   pip install -r requirements.txt
 
+## Ejecución local
+streamlit run app/streamlit_app.py
+
+## Enlace publico
+pendiente
+
 ### Referencias del repositorio original
 Glymour, Madelyn, Judea Pearl, and Nicholas P. Jewell. Causal inference in statistics: A primer. John Wiley & Sons, 2016. 
