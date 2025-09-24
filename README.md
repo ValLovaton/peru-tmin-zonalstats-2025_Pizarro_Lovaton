@@ -1,7 +1,7 @@
 # Perú Tmin — Zonal Stats + Public Policy + Streamlit
 
 ## Propósito
-Analizar datos de temperatura mínima (Tmin) a nivel territorial (distrito/provincia/departamento) usando un raster GeoTIFF. El objetivo es diagnosticar riesgos de heladas y friajes, y proponer políticas públicas basadas en evidencia. Además, se entrega una app interactiva en **Streamlit**.
+Analizar datos de temperatura mínima (Tmin) a nivel territorial (distrito/provincia/departamento) usando un raster GeoTIFF. El objetivo es diagnosticar riesgos de heladas y friajes, y proponer políticas públicas basadas en evidencia. Además, se entrega una app interactiva en Streamlit.
 
 ## Estructura del repositorio
 - `/app` → aplicación Streamlit 
@@ -19,5 +19,5 @@ Analizar datos de temperatura mínima (Tmin) a nivel territorial (distrito/provi
   ```bash
   pip install -r requirements.txt
 
-### References del repositorio original
+### Referencias del repositorio original
 Glymour, Madelyn, Judea Pearl, and Nicholas P. Jewell. Causal inference in statistics: A primer. John Wiley & Sons, 2016. 
