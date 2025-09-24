@@ -1,45 +1,29 @@
-## Simpson's Paradox Dashboard with Python
+# Perú Tmin — Zonal Stats + Public Policy + Streamlit
 
-This dashboard was based off of the dashboard made by [Bach and Tan](https://github.com/DigitalCausalityLab/simpsonsparadox) to demonstrate the same phenomenon. This example is taken from Glymour et al. (2016)
+## Propósito
+Analizar datos de temperatura mínima (Tmin) a nivel territorial (distrito/provincia/departamento) usando un raster GeoTIFF. El objetivo es diagnosticar riesgos de heladas y friajes, y proponer políticas públicas basadas en evidencia. Además, se entrega una app interactiva en Streamlit.
 
-### Running locally
+## Estructura del repositorio
+- `/app` → aplicación Streamlit 
+- `/scripts` → utilidades de carga, zonal stats y gráficos.
+- `/data` → raster y shapefiles/GeoJSON 
+  - `raster/`
+  - `vector/`
+  - `outputs/`
+- `/notebooks` → análisis exploratorio 
+- `/app/assets` → imágenes o mapas estáticos.
 
-To run locally, it is advisable to first create a virtual environment
+## Requisitos
+- Python 3.10+
+- Instalar dependencias con:
+  ```bash
+  pip install -r requirements.txt
 
-You will need to have Python installed and in your `PATH`. While located in the root directory of this repository, 
+## Ejecución local
+streamlit run app/streamlit_app.py
 
-```
-python -m venv env
-```
+## Enlace publico
+pendiente
 
-Now activate the virtual environment:
-
-#### Windows
-
-```
-env/Scripts/activate
-```
-
-#### Linux/MacOS
-
-```
-source env/bin/activate
-```
-
-Now you must install the necessary dependencies to run the dashboard:
-
-```
-pip install -r requirements.txt
-```
-
-This should take a few minutes. Once it is done, you can run the streamlit application:
-
-```
-streamlit run src/streamlit_app.py
-```
-
-This should start a locally hosted server and automatically open a browser tab with the application
-
-### References
-
+### Referencias del repositorio original
 Glymour, Madelyn, Judea Pearl, and Nicholas P. Jewell. Causal inference in statistics: A primer. John Wiley & Sons, 2016. 
