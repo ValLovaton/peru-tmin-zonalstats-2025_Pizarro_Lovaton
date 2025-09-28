@@ -30,7 +30,7 @@ if uploaded_file is not None:
     tmp.close()
     raster_path = tmp.name
 else:
-    st.warning("⚠️ No se subió un raster. Descárgalo desde el link de Google Drive y súbelo aquí.")
+    st.warning("No se subió un raster. Descárgalo desde el link de Google Drive y súbelo aquí.")
     st.stop()
 
 # --- Cargar shapes y calcular zonal stats
@@ -48,7 +48,7 @@ col3.metric("📊 Promedio nacional", f"{res['mean'].mean():.1f} °C")
 st.markdown("---")
 
 # --- Tabs para secciones
-tab1, tab2, tab3 = st.tabs(["📊 Distribución", "🏅 Ranking", "🗺️ Mapa"])
+tab1, tab2, tab3 = st.tabs(["📊 Distribución", "🏅 Ranking", "🗺️ Mapa Coropletico"])
 
 with tab1:
     st.subheader("Distribución de Tmin promedio")
@@ -66,10 +66,24 @@ with tab2:
     col1, col2 = st.columns(2)
     with col1:
         st.write("**Más fríos**")
-        st.dataframe(topk[["UBIGEO", "NAME", "mean"]])
+        st.dataframe(
+            topk.rename(columns={
+                "UBIGEO": "Código",
+                "NAME": "Territorio",
+                "mean": "Tmin promedio (°C)"
+            })[["Código", "Territorio", "Tmin promedio (°C)"]]
+        )
+    
     with col2:
         st.write("**Más cálidos**")
-        st.dataframe(botk[["UBIGEO", "NAME", "mean"]])
+        st.dataframe(
+            botk.rename(columns={
+                "UBIGEO": "Código",
+                "NAME": "Territorio",
+                "mean": "Tmin promedio (°C)"
+            })[["Código", "Territorio", "Tmin promedio (°C)"]]
+        )
+
     st.markdown(
         f"📌 **Conclusión**: El distrito más frío es **{res.loc[res['mean'].idxmin(), 'NAME']}** "
         f"({res['mean'].min():.1f} °C), mientras que el más cálido es "
@@ -96,10 +110,44 @@ st.download_button(
     mime="text/csv",
 )
 
-st.header("🧭 Propuestas de política pública (borrador)")
+st.header("🧭 Propuestas de política pública")
+
+st.subheader("Diagnóstico")
 st.markdown("""
-- **Medida 1:** Vivienda térmica (ISUR).  
-- **Medida 2:** Kits anti-helada para pequeños productores.  
-- **Medida 3:** Calendario agro + alertas tempranas.
+El análisis de Tmin muestra que:
+- Los distritos altoandinos (Puno, Cusco, Ayacucho, Huancavelica, Pasco, Junín) presentan riesgo alto de heladas (Tmin p10 < 0 °C).
+- En la Amazonía (Loreto, Ucayali, Madre de Dios) se registran friajes que afectan salud y agricultura.
+
+La literatura (MINSA, FAO, Banco Mundial) resalta impactos en salud, vivienda precaria y producción agropecuaria.
 """)
+
+with st.expander("1️⃣ Viviendas térmicas adaptadas (ISUR + techos solares)"):
+    st.markdown("""
+    - **Objetivo:** Reducir infecciones respiratorias agudas en niños y adultos mayores.  
+    - **Población meta:** Hogares en distritos con Tmin p10 < 0 °C.  
+    - **Intervención:** Adaptación con materiales aislantes y doble techo (ISUR), uso de tecnologías solares pasivas.  
+    - **Costo estimado:** S/ 3,500–4,000 por vivienda.  
+    - **KPI:** −20 % de casos IRA (MINSA), +15 % asistencia escolar.  
+    - **Evidencia:** PNVR en Puno (2018–2020) mostró reducción de neumonía y mejoras térmicas.
+    """)
+
+with st.expander("2️⃣ Kits agropecuarios antihelada"):
+    st.markdown("""
+    - **Objetivo:** Disminuir pérdidas en cultivos y ganado.  
+    - **Población meta:** Productores altoandinos (papa, quinua, alpacas).  
+    - **Intervención:** Cobertores plásticos, microtúneles, sales minerales, refugios para alpacas.  
+    - **Costo estimado:** S/ 800–1,000 por productor/ha.  
+    - **KPI:** −25 % mortalidad de crías de alpaca, −15 % pérdidas agrícolas.  
+    - **Evidencia:** AgroRural y FAO (2015–2019) redujeron mortalidad ganadera y pérdidas de cultivos.
+    """)
+
+with st.expander("3️⃣ Sistema de alerta temprana y calendario agro adaptado"):
+    st.markdown("""
+    - **Objetivo:** Aumentar resiliencia frente a heladas y friajes.  
+    - **Población meta:** Agricultores de Amazonía y sierra sur.  
+    - **Intervención:** Alertas vía SMS/WhatsApp/radio, ajuste de calendarios según percentiles climáticos.  
+    - **Costo estimado:** S/ 10–15 por agricultor/año.  
+    - **KPI:** ≥70 % adopción de recomendaciones, −15 % pérdidas por eventos fríos.  
+    - **Evidencia:** Programas del Banco Mundial (2020) mejoraron rendimientos y redujeron exposición a shocks.
+    """)
 
