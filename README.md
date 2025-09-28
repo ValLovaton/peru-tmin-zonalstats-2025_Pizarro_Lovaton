@@ -25,6 +25,11 @@ streamlit run app/streamlit_app.py
 ## Enlace publico
 pendiente
 
+## Datos
+
+- **Temperatura mínima (Tmin)**: raster GeoTIFF disponible en Google Drive: https://drive.google.com/drive/folders/1kf8Kfuo3EkmcPfQMIyVKPug0FwnzTNHP
+- **Límites administrativos**: GeoJSON de distritos, provincias y departamentos en `/data/vector/`
+
 ## Politicas publicas recomendadas en base a los resultados
 
 ### Diagnóstico
