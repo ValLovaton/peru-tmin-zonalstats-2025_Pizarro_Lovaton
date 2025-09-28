@@ -27,9 +27,24 @@ band = st.sidebar.number_input("Banda del raster (1 = 2020, 2 = 2021, ...)", min
 # --- Cargar shapes
 gdf = load_admin_level(level)
 
+# Google drive
+uploaded_file = st.sidebar.file_uploader("Sube el raster Tmin (GeoTIFF)", type=["tif", "tiff"])
+
+if uploaded_file is not None:
+    import rasterio
+    from tempfile import NamedTemporaryFile
+    tmp = NamedTemporaryFile(delete=False, suffix=".tif")
+    tmp.write(uploaded_file.read())
+    tmp.close()
+    raster_path = tmp.name
+else:
+    st.warning("No se subió un raster. Descárgalo desde el link de Google Drive y súbelo aquí.")
+    st.stop()
+
+
 # --- Calcular estadísticas zonales
 try:
-    res = compute_band_stats(gdf, tif_name="tmin_peru.tif", band=band)
+    res = compute_band_stats(gdf, tif_name=raster_path, band=band)
 except FileNotFoundError:
     st.error("No se encontró el archivo raster en /data/raster/")
     st.stop()
