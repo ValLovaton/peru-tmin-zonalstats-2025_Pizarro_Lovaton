@@ -23,7 +23,7 @@ Analizar datos de temperatura mínima (Tmin) a nivel territorial (distrito/provi
 streamlit run app/streamlit_app.py
 
 ## Enlace publico
-pendiente
+https://peru-tmin-zonalstats-2025pizarrolovaton-auqfju5kbv4abd9vocfvhm.streamlit.app/
 
 ## Datos
 
