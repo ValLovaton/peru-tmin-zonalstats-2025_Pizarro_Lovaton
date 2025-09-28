@@ -3,11 +3,13 @@ import geopandas as gpd
 
 # Directorios base
 DATA_DIR = Path(__file__).resolve().parents[1] / "data"
-VECTOR_DIR = DATA_DIR / "vector"
+# VECTOR_DIR = DATA_DIR / "vector"
 RASTER_DIR = DATA_DIR / "raster"
 
-def load_admin_level(level="district"):
 
+VECTOR_DIR = Path("data/vector")
+
+def load_admin_level(level="district"):
     fname = {
         "district": "peru_districts.geojson",
         "province": "peru_provinces.geojson",
@@ -16,19 +18,18 @@ def load_admin_level(level="district"):
 
     gdf = gpd.read_file(VECTOR_DIR / fname).to_crs(4326)
 
-    # Normalizar columnas
-    gdf["UBIGEO"] = gdf["UBIGEO"].astype(str).str.upper()
-    gdf["NAME"] = (
-        gdf["NAME"]
-        .str.upper()
-        .str.normalize("NFKD")
-        .str.encode("ascii", errors="ignore")
-        .str.decode("utf-8")
-    )
+    # Asignar UBIGEO y NAME según el nivel
+    if level == "district":
+        gdf["UBIGEO"] = gdf["IDDIST"].astype(str)
+        gdf["NAME"] = gdf["NOMBDIST"].str.upper()
+    elif level == "province":
+        gdf["UBIGEO"] = gdf["IDPROV"].astype(str)
+        gdf["NAME"] = gdf["NOMBPROV"].str.upper()
+    else:  # department
+        gdf["UBIGEO"] = gdf["IDDPTO"].astype(str)
+        gdf["NAME"] = gdf["NOMBDEP"].str.upper()
 
-    # Arreglar geometrías inválidas
     gdf["geometry"] = gdf["geometry"].buffer(0)
-
     return gdf
 
 def raster_path(name="tmin_peru.tif"):
