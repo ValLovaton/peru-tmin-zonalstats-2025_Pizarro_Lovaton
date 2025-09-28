@@ -29,8 +29,12 @@ def load_admin_level(level="district"):
         gdf["UBIGEO"] = gdf["IDDPTO"].astype(str)
         gdf["NAME"] = gdf["NOMBDEP"].str.upper()
 
+    # Limpiar geometrías
+    gdf = gdf[~gdf["geometry"].isna()].copy()
     gdf["geometry"] = gdf["geometry"].buffer(0)
+
     return gdf
+
 
 def raster_path(name="tmin_peru.tif"):
     """Devuelve la ruta completa al raster."""
